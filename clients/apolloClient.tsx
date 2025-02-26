@@ -3,11 +3,11 @@ import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 import "react-native-url-polyfill/auto";
-
-const HASURA_GRAPHQL_ENDPOINT = "https://evolving-warthog-44.hasura.app/v1/graphql";
-const HASURA_GRAPHQL_WS = "wss://evolving-warthog-44.hasura.app/v1/graphql";
-const HASURA_ADMIN_SECRET = "t0Y9AsLGDMsXCrjCPPepcPvqNkZ1Yyxd22NA0VK7G941Kx9RvfNMgYcRAbjJ983B"; 
-
+import { 
+  HASURA_GRAPHQL_ENDPOINT, 
+  HASURA_GRAPHQL_WS, 
+  HASURA_ADMIN_SECRET 
+} from '@env';
 
 // HTTP Link for Queries & Mutations
 const httpLink = new HttpLink({

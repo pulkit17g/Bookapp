@@ -1,8 +1,8 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeScreen from '../component/HomeScreen';
-import Books from '../component/Books';
-import Authors from '../component/Authors';
+import HomeScreen from '../screens/HomeScreen';
+import Books from '../screens/Books';
+import Authors from '../screens/Authors';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
 

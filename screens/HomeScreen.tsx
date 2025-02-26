@@ -10,20 +10,24 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import Books from './assets/icons/books.png';
-import BookCover from './assets/icons/bookCover.png';
+import Books from './../assets/icons/books.png';
+import BookCover from './../assets/icons/bookCover.png';
 import {useQuery, gql} from '@apollo/client';
 
 const HomeScreen = () => {
   const GET_BOOKS = gql`
-    query MyQuery($limit: Int) {
-      book_book(limit: $limit) {
-        authorId
-        id
-        isAuthorAnAdult
-        name
-      }
+    query MyQuery {
+  book_book {
+    authorId
+    id
+    name
+    publishingDate
+    author {
+      name
     }
+  }
+}
+
   `;
   const {data, loading, error, fetchMore} = useQuery<any>(GET_BOOKS, {
     variables: {limit: 5},
