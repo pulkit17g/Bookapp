@@ -13,16 +13,15 @@ import {Formik} from 'formik';
 import * as Yup from 'yup';
 import {GET_AUTHORS} from '../schema/queries';
 import Modal from '../component/Modal';
+import AddAuthorModal from '../component/AddAuthorModal';
 
 export default function Authors() {
   const {data, loading, error} = useQuery(GET_AUTHORS);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handlePress = () => setIsModalOpen(true);
-  const bookIds = data?.author_author?.getAllBookIdFromAuthorId?.split(',');
-  const noOfBooks = bookIds?.length;
+
   console.log(data);
-  console.log(noOfBooks);
 
   if (loading) return <ActivityIndicator size="large" color="#ed894e" />;
   if (error)
@@ -53,49 +52,7 @@ export default function Authors() {
       <TouchableOpacity style={styles.button} onPress={handlePress}>
         <Text style={styles.buttonText}>Add Author</Text>
       </TouchableOpacity>
-
-      <Modal isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)}>
-        <View style={styles.modalContainer}>
-          <Text style={styles.modalHeader}>Add a New Author</Text>
-
-          <Formik
-            initialValues={{name: ''}}
-            validationSchema={Yup.object().shape({
-              name: Yup.string().required('Author Name is required'),
-            })}
-            onSubmit={values => {
-              console.log('Form Submitted:', values);
-              setIsModalOpen(false);
-            }}>
-            {({handleChange, handleSubmit, values, errors, touched}) => (
-              <>
-                <Text style={styles.label}>Author Name</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter Author Name"
-                  value={values.name}
-                  onChangeText={handleChange('name')}
-                />
-                {touched.name && errors.name && (
-                  <Text style={styles.errorText}>{errors.name}</Text>
-                )}
-
-                <TouchableOpacity
-                  style={styles.submitButton}
-                  onPress={handleSubmit}>
-                  <Text style={styles.submitButtonText}>Submit</Text>
-                </TouchableOpacity>
-              </>
-            )}
-          </Formik>
-
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setIsModalOpen(false)}>
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
-        </View>
-      </Modal>
+      <AddAuthorModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
     </View>
   );
 }
@@ -137,23 +94,5 @@ const styles = StyleSheet.create({
     position:'absolute',
   },
   buttonText: {color: 'white', fontWeight: 'bold'},
-  modalContainer: {backgroundColor: 'white', padding: 20, borderRadius: 10, width:'80%', borderColor:'gray', borderWidth:1, elevation:3},
-  modalHeader: {fontSize: 18, fontWeight: 'bold', marginBottom: 10},
-  label: {fontSize: 14, fontWeight: 'bold', marginTop: 10},
-  input: {
-    borderWidth: 1,
-    borderColor: 'gray',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 5,
-  },
-  submitButton: {
-    backgroundColor: '#ed894e',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
-  },
-  submitButtonText: {color: 'white', textAlign: 'center', fontWeight: 'bold'},
-  closeButton: {marginTop: 10},
-  closeButtonText: {textAlign: 'center', color: '#ed894e', fontWeight: 'bold'},
+  
 });
