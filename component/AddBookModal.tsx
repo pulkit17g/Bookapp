@@ -14,10 +14,33 @@ import RNPickerSelect from 'react-native-picker-select';
 import DatePicker from 'react-native-date-picker';
 import { useQuery } from '@apollo/client';
 
-const AddBookModal = ({isModalOpen, setIsModalOpen}) => {
+interface AddBookModalProps {
+  isModalOpen: boolean;
+  setIsModalOpen: (isOpen: boolean) => void;
+  selectedBooks: any[];  // replace 'any' with your book type if available
+  setSelectedBooks: (books: any[]) => void;
+  authorModal?: boolean;
+  authorName?: string;
+}
+
+interface BookFormValues {
+  name: string;
+  publishedDate: string;
+  authorId: string;
+  author?: string;
+}
+
+const AddBookModal: React.FC<AddBookModalProps> = ({
+  isModalOpen,
+  setIsModalOpen,
+  selectedBooks,
+  setSelectedBooks,
+  authorModal,
+  authorName
+}) => {
     const {data: authorsData} = useQuery(GET_AUTHORS);
     console.log(authorsData);
-    const [datePickerVisible, setDatePickerVisible] = useState(false);
+    const [_datePickerVisible, setDatePickerVisible] = useState(false);
     const [date, setDate] = useState(new Date());
   
     const authorOptions =
@@ -30,18 +53,28 @@ const AddBookModal = ({isModalOpen, setIsModalOpen}) => {
     <View style={styles.modalContainer}>
       <Text style={styles.modalHeader}>Add a New Book</Text>
 
-      <Formik
-        initialValues={{name: '', publishedDate: '', authorId: ''}}
+      <Formik<BookFormValues>
+        initialValues={{
+          name: '',
+          publishedDate: '',
+          authorId: authorName ? 'preset' : '',
+          author: authorName || ''
+        }}
         validationSchema={Yup.object().shape({
           name: Yup.string().required('Book Name is required'),
-          publishedDate: Yup.string().required(
-            'Publishing Date is required',
-          ),
-          authorId: Yup.string().required('Author is required'),
+          publishedDate: Yup.string().required('Publishing Date is required'),
+          authorId: authorName ? Yup.string() : Yup.string().required('Author is required'),
         })}
         onSubmit={values => {
-          console.log('Form Submitted:', values);
+          const submissionValues = {
+            ...values,
+            author: authorName || values.author,
+          };
+          console.log('Form Submitted:', submissionValues);
           setIsModalOpen(false);
+          if(authorModal){
+            setSelectedBooks([...selectedBooks, submissionValues]);
+          }
         }}>
         {({
           handleChange,
@@ -56,7 +89,7 @@ const AddBookModal = ({isModalOpen, setIsModalOpen}) => {
             <TextInput
               style={styles.input}
               placeholder="Enter Book Name"
-              value={values.name}
+              value={values.name }
               onChangeText={handleChange('name')}
             />
             {touched.name && errors.name && (
@@ -85,19 +118,25 @@ const AddBookModal = ({isModalOpen, setIsModalOpen}) => {
            </View>
 
             <Text style={styles.label}>Author</Text>
-            <RNPickerSelect
-              onValueChange={value => setFieldValue('authorId', value)}
-              items={authorOptions}
-              style={pickerSelectStyles}
-              placeholder={{label: 'Select an author', value: ''}}
-            />
-            {touched.author && errors.author && (
-              <Text style={styles.errorText}>{errors.author}</Text>
+            {authorName ? (
+              <View style={styles.input}>
+                <Text>{authorName}</Text>
+              </View>
+            ) : (
+              <RNPickerSelect
+                onValueChange={value => setFieldValue('authorId', value)}
+                items={authorOptions}
+                style={pickerSelectStyles}
+                placeholder={{label: 'Select an author', value: ''}}
+              />
+            )}
+            {touched.authorId && errors.authorId && (
+              <Text style={styles.errorText}>{errors.authorId}</Text>
             )}
 
             <TouchableOpacity
               style={styles.submitButton}
-              onPress={handleSubmit}>
+              onPress={() => handleSubmit()}>
               <Text style={styles.submitButtonText}>Submit</Text>
             </TouchableOpacity>
           </>
